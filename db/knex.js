@@ -23,9 +23,5 @@ knex.from('users').select("id", "email")
         }
     })
 
-// //проверка подключения
-// knex.raw('SELECT VERSION()').then(() => {
-//     console.log('connection to db successfull');
-// });
-
+module.exports = usersList;
 module.exports = knex;

@@ -1,34 +1,26 @@
 require('dotenv').config();
 
 const { Telegraf } = require('telegraf');
+const { message } = require('telegraf/filters');
 const axios = require('axios');
 const knex = require('../db/knex');
+const usersList = require('../db/knex');
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
 bot.start((ctx) => ctx.reply('Для авторизации введите свой email: '));
 
-// bot.on('message', async (msg) => {
-    
-//   const text = msg.text;
-//   const chatId = msg.chat_id;
+bot.on(message('text'), async (ctx) => {
+  const emailFromTg = ctx.message.text;
 
-//   try {
-//     if (text === 'мой_айди') { return bot.sendMessage(chatId, `Твой айди: ${chatId}`) }
-//   } catch (e) {
-//     console.log('Подключение к БД сломалось')
-//   }
-
-// })
-
-bot.on('edited_message', ctx => {
-  ctx.reply('Вы успешно изменили сообщение')
+  if (emailFromTg === usersList.email) {
+    await ctx.reply('все круто')
+  } else {
+    await ctx.reply('Пользователь с таким email не найден')
+  }
+  
+  //ctx.chat.id id пользователя в тг
 })
-
-// bot.on('мой_id', ctx => {
-//   let user__id = ctx.from_user.id;
-//   ctx.reply('Твой ID: ' + user__id)
-// })
   
 bot.launch();
 
