@@ -1,25 +1,33 @@
 require('dotenv').config();
-
 const { Telegraf } = require('telegraf');
 const { message } = require('telegraf/filters');
 const axios = require('axios');
 const knex = require('../db/knex');
-const usersList = require('../db/knex');
-
+const { userListQuery } = require('../db/knex');
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
-bot.start((ctx) => ctx.reply('Для авторизации введите свой email: '));
+bot.start((ctx) => ctx.reply('Добро пожаловать!\nДля авторизации введите свой email: '));
 
 bot.on(message('text'), async (ctx) => {
   const emailFromTg = ctx.message.text;
+  const tgId = ctx.chat.id;
+  //const userList = await userListQuery();
+  // console.log(userList) //все пользователи из бд
 
-  if (emailFromTg === usersList.email) {
-    await ctx.reply('все круто')
-  } else {
-    await ctx.reply('Пользователь с таким email не найден')
+  const matchedUsers = await knex.userQuery(emailFromTg);
+  console.log(matchedUsers);
+  try {
+    if (matchedUsers?.length > 0) {
+      //пуш tgId в бд
+
+      await ctx.reply('Теперь вы будете получать уведомления о событиях')
+    } else {
+      await ctx.reply('Пользователь с таким email не найден')
+    }
   }
-  
-  //ctx.chat.id id пользователя в тг
+  catch (e) {
+    throw new e;
+  }
 })
   
 bot.launch();

@@ -12,16 +12,16 @@ const knex = require('knex')({
     pool: {min: 2, max: 10}
 });
 
-let usersList = new Object();
-
-knex.from('users').select("id", "email")
+module.exports = {
+    userListQuery: () => knex.from('users').select("id", "email")
     .then((rows) => {
+        let userList = [];
         for (row of rows) {
-            usersList.id = row['id'];
-            usersList.email = row['email']
-            console.log(usersList)
+            userList.push({id: row.id, email: row.email})
         }
-    })
+        return userList;
+    }),
+    userQuery: (email) => knex.from('users').select("id", "email").where('email', email)
+}
 
-module.exports = usersList;
-module.exports = knex;
+//knex.insert({ telegram_id: 'tgId' }).into('users');
